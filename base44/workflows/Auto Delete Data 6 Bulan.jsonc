@@ -1,0 +1,49 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "auto_delete_data_6_bulan",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "autoDeleteOldData",
+            "args": {
+              "trigger_key": "mt_int_7Qx4bV92LsPd31Ka8ZrW6Ynt"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Hapus data lama"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Hapus otomatis data berusia lebih dari 6 bulan dan tandai peringatan 7 hari sebelumnya",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 19 * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Auto Delete Data 6 Bulan",
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "autoDeleteOldData"
+  }
+}

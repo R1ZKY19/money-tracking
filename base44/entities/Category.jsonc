@@ -1,0 +1,55 @@
+{
+  "name": "Category",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "income",
+        "expense",
+        "saving",
+        "debt",
+        "receivable"
+      ],
+      "description": "Category type"
+    },
+    "color": {
+      "type": "string",
+      "default": "#0D4F6D"
+    },
+    "icon": {
+      "type": "string",
+      "default": "Tag"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_favorite": {
+      "type": "boolean",
+      "default": false,
+      "description": "Tandai kategori favorit untuk shortcut cepat"
+    }
+  },
+  "required": [
+    "name",
+    "type"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

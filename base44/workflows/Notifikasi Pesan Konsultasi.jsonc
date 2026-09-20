@@ -1,0 +1,41 @@
+{
+  "name": "Notifikasi Pesan Konsultasi",
+  "description": "Mengirim notifikasi in-app dan Telegram setiap ada pesan konsultasi baru.",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "notifikasi_pesan_konsultasi",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "notify_recipient": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "notifyConsultationMessage",
+            "args": {
+              "message_id": "${ .trigger.entity_id }",
+              "trigger_key": "mt_int_7Qx4bV92LsPd31Ka8ZrW6Ynt"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Kirim notifikasi",
+            "description": "In-app + Telegram"
+          }
+        }
+      }
+    ]
+  },
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "create"
+      ],
+      "entity_name": "ConsultationMessage"
+    }
+  }
+}

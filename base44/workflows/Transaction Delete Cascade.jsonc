@@ -1,0 +1,37 @@
+{
+  "name": "Transaction Delete Cascade",
+  "description": "Otomatis hapus Hutang/Piutang terkait dan kembalikan saldo bank saat transaksi dihapus",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "entity",
+      "events": [
+        "delete"
+      ],
+      "entity_name": "Transaction"
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "transaction_delete_cascade",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "handleTransactionDelete",
+            "args": {}
+          },
+          "then": "end"
+        }
+      }
+    ]
+  },
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "handleTransactionDelete"
+  }
+}

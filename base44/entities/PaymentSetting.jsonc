@@ -1,0 +1,73 @@
+{
+  "name": "PaymentSetting",
+  "type": "object",
+  "properties": {
+    "accounts": {
+      "type": "array",
+      "description": "Daftar rekening tujuan pembayaran",
+      "items": {
+        "type": "object",
+        "properties": {
+          "bank": {
+            "type": "string",
+            "description": "Jenis / nama bank"
+          },
+          "number": {
+            "type": "string",
+            "description": "Nomor rekening"
+          },
+          "holder": {
+            "type": "string",
+            "description": "Nama pemilik rekening"
+          },
+          "color": {
+            "type": "string",
+            "default": "#0B4EA2"
+          },
+          "is_active": {
+            "type": "boolean",
+            "default": true
+          }
+        }
+      }
+    },
+    "price_STAF": {
+      "type": "number",
+      "minimum": 0,
+      "default": 600000
+    },
+    "price_MASTER_2": {
+      "type": "number",
+      "minimum": 0,
+      "default": 1000000
+    },
+    "price_MASTER_1": {
+      "type": "number",
+      "minimum": 0,
+      "default": 1300000
+    },
+    "note": {
+      "type": "string",
+      "description": "Catatan yang tampil di halaman pembayaran"
+    }
+  },
+  "required": [],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "email": "rizkykucuk19@gmail.com"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "email": "rizkykucuk19@gmail.com"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "email": "rizkykucuk19@gmail.com"
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "ExchangeRate",
+  "type": "object",
+  "properties": {
+    "from_currency": {
+      "type": "string",
+      "description": "Mata uang asal, e.g. USD"
+    },
+    "to_currency": {
+      "type": "string",
+      "description": "Mata uang tujuan, e.g. IDR",
+      "default": "IDR"
+    },
+    "rate": {
+      "type": "number",
+      "description": "Nilai tukar"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "from_currency",
+    "to_currency",
+    "rate"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "name": "PackageFeature",
+  "type": "object",
+  "properties": {
+    "package_id": {
+      "type": "string"
+    },
+    "package_name": {
+      "type": "string"
+    },
+    "feature_id": {
+      "type": "string"
+    },
+    "feature_slug": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "package_id",
+    "feature_id"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

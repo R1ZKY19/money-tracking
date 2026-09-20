@@ -1,0 +1,59 @@
+{
+  "name": "Currency",
+  "type": "object",
+  "properties": {
+    "country_name": {
+      "type": "string",
+      "description": "Nama negara"
+    },
+    "currency_code": {
+      "type": "string",
+      "description": "Kode mata uang, e.g. USD"
+    },
+    "currency_name": {
+      "type": "string",
+      "description": "Nama mata uang, e.g. US Dollar"
+    },
+    "currency_symbol": {
+      "type": "string",
+      "description": "Simbol, e.g. $"
+    },
+    "flag_emoji": {
+      "type": "string",
+      "description": "Emoji bendera negara"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_system": {
+      "type": "boolean",
+      "default": false,
+      "description": "Mata uang bawaan sistem"
+    }
+  },
+  "required": [
+    "country_name",
+    "currency_code",
+    "currency_name",
+    "currency_symbol"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

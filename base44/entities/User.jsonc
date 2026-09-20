@@ -1,0 +1,25 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "user"
+      ],
+      "default": "user"
+    },
+    "username": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 24,
+      "pattern": "^[a-z0-9_]+$",
+      "description": "Username unik untuk identitas akun"
+    },
+    "telegram_chat_id": {
+      "type": "string",
+      "description": "Telegram Chat ID untuk integrasi bot"
+    }
+  }
+}

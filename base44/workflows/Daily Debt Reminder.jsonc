@@ -1,0 +1,49 @@
+{
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_debt_reminder",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "run_function": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "sendDebtReminder",
+            "args": {
+              "trigger_key": "mt_int_7Qx4bV92LsPd31Ka8ZrW6Ynt"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Kirim pengingat jatuh tempo"
+          }
+        }
+      }
+    ]
+  },
+  "description": "Send daily email reminders for overdue and upcoming debt payments at 9 AM",
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 2 * * *",
+      "one_time_date": null,
+      "timezone": "UTC",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Daily Debt Reminder",
+  "x-base44-migrated-from-automation": {
+    "legacy_payload_function": "sendDebtReminder"
+  }
+}

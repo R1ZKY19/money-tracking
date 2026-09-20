@@ -1,0 +1,145 @@
+{
+  "name": "SavingTarget",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "rumah",
+        "kendaraan",
+        "investasi",
+        "liburan",
+        "pendidikan",
+        "dana_darurat",
+        "gadget",
+        "emas",
+        "lainnya"
+      ],
+      "default": "lainnya",
+      "description": "Kategori target tabungan"
+    },
+    "target_amount": {
+      "type": "number"
+    },
+    "initial_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Nominal awal saat target dibuat"
+    },
+    "current_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "currency": {
+      "type": "string",
+      "default": "IDR"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Tanggal mulai menabung"
+    },
+    "deadline": {
+      "type": "string",
+      "format": "date"
+    },
+    "duration_months": {
+      "type": "number",
+      "description": "Lama target dalam bulan (alternatif deadline)"
+    },
+    "frequency": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "monthly"
+      ],
+      "default": "monthly",
+      "description": "Frekuensi menabung"
+    },
+    "deposit_amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Nominal setoran per frekuensi"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "default": "medium"
+    },
+    "flexibility": {
+      "type": "string",
+      "enum": [
+        "strict",
+        "normal",
+        "flexible"
+      ],
+      "default": "normal"
+    },
+    "target_image": {
+      "type": "string",
+      "description": "URL foto target (rumah, mobil, dll)"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "achieved"
+      ],
+      "default": "active"
+    },
+    "color": {
+      "type": "string",
+      "default": "#10B981"
+    },
+    "icon": {
+      "type": "string",
+      "default": "Target"
+    },
+    "source_account_id": {
+      "type": "string",
+      "description": "ID akun sumber (bank dari mana uang didebit)"
+    },
+    "source_account_name": {
+      "type": "string",
+      "description": "Nama akun sumber, e.g. BCA Tabungan"
+    },
+    "destination_account_id": {
+      "type": "string",
+      "description": "ID akun tujuan/tampung (rekening khusus tujuan ini)"
+    },
+    "destination_account_name": {
+      "type": "string",
+      "description": "Nama akun tujuan, e.g. BTN DP Rumah"
+    }
+  },
+  "required": [
+    "name",
+    "target_amount",
+    "currency"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

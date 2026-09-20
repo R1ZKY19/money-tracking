@@ -1,0 +1,53 @@
+{
+  "name": "BudgetPlan",
+  "type": "object",
+  "properties": {
+    "year": {
+      "type": "integer",
+      "description": "Tahun anggaran"
+    },
+    "month": {
+      "type": "integer",
+      "description": "Bulan anggaran (1-12)"
+    },
+    "income": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Array {name, budget} untuk kategori pendapatan"
+    },
+    "saving": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Array {name, budget} untuk kategori tabungan"
+    },
+    "expense": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Array {name, budget} untuk kategori pengeluaran"
+    }
+  },
+  "required": [
+    "year",
+    "month"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

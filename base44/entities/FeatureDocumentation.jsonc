@@ -1,0 +1,63 @@
+{
+  "name": "FeatureDocumentation",
+  "type": "object",
+  "properties": {
+    "feature_id": {
+      "type": "string"
+    },
+    "feature_slug": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "short_description": {
+      "type": "string"
+    },
+    "full_description": {
+      "type": "string"
+    },
+    "usage_guide": {
+      "type": "string"
+    },
+    "tips": {
+      "type": "string"
+    },
+    "faq": {
+      "type": "string"
+    },
+    "examples": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "auto_generated": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "feature_id",
+    "title"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
