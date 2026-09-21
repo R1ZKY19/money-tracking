@@ -59,6 +59,9 @@ export const AuthProvider = ({ children }) => {
   const loadUserProfile = async (authUser) => {
     if (!authUser) return;
     try {
+      const emailLower = authUser.email?.toLowerCase();
+      const isOwner = emailLower === 'rizkykucuk19@gmail.com';
+
       // Ambil profil dari tabel profiles
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -76,10 +79,38 @@ export const AuthProvider = ({ children }) => {
         ...(profile || {}),
         email: authUser.email,
         id: authUser.id,
-        full_name: profile?.full_name || authUser.user_metadata?.full_name || '',
+        role: isOwner ? 'super_master' : (profile?.role || 'user'),
+        is_approved: isOwner ? true : (profile?.is_approved ?? false),
+        full_name: profile?.full_name || authUser.user_metadata?.full_name || 'Super Master',
       };
 
-      // Cek apakah email sudah diapprove oleh admin
+      // JIKA OWNER / SUPER MASTER: Selalu aktif dan langsung tembus!
+      if (isOwner) {
+        // Pastikan database profiles & approved_users tersimpan sebagai super_master
+        supabase.from('profiles').upsert({
+          id: authUser.id,
+          email: authUser.email,
+          full_name: fullUser.full_name,
+          role: 'super_master',
+          is_approved: true,
+        }, { onConflict: 'id' }).then(() => {});
+
+        supabase.from('approved_users').upsert({
+          email: authUser.email,
+          role: 'super_master',
+          is_approved: true,
+          approved_by: 'system',
+        }, { onConflict: 'email' }).then(() => {});
+
+        setUser(fullUser);
+        setIsAuthenticated(true);
+        setAuthChecked(true);
+        setAuthError(null);
+        setIsLoadingAuth(false);
+        return;
+      }
+
+      // Cek apakah email sudah diapprove oleh admin (untuk user biasa)
       if (profile && profile.is_approved === false) {
         setIsAuthenticated(false);
         setUser(fullUser);

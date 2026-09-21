@@ -24,8 +24,24 @@ export function UserRoleProvider({ children }) {
         .eq('id', authUser.id)
         .single();
 
-      const fullUser = { ...authUser, ...(profile || {}) };
+      const emailLower = authUser.email?.toLowerCase();
+      const isOwner = emailLower === 'rizkykucuk19@gmail.com';
+
+      const fullUser = {
+        ...authUser,
+        ...(profile || {}),
+        role: isOwner ? 'super_master' : (profile?.role || 'user'),
+        is_approved: isOwner ? true : (profile?.is_approved ?? false),
+      };
       setUser(fullUser);
+
+      if (isOwner) {
+        setApprovedUser({ email: authUser.email, role: 'super_master', is_approved: true });
+        setRole('super_master');
+        setAccessModules(null); // Full access to all modules
+        setLoading(false);
+        return;
+      }
 
       if (profile?.is_approved) {
         // Ambil data approved_user yang mungkin punya role & access_modules kustom
