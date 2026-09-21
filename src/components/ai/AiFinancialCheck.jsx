@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Sparkles, Loader2, RefreshCw } from 'lucide-react';
 import { DEMO_MODE } from '@/components/demo/demoSession';

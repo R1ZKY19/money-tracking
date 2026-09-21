@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Clock, ShieldCheck } from 'lucide-react';
 
-const ROBOT = 'https://media.base44.com/images/public/6a2817e4a27a25c626d7a995/a6aa09447_generated_image.png';
+const ROBOT = '/logo.png';
 
 export default function GoogleUnavailable() {
   return (

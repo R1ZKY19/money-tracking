@@ -1,6 +1,6 @@
 import { Shield, LogOut, Database, Lock, X, Check } from 'lucide-react';
 
-const AUTH_LOGO = 'https://media.base44.com/images/public/6a2817e4a27a25c626d7a995/628dd9086_image.png';
+const AUTH_LOGO = '/logo.png';
 
 const ASSURANCES = [
   { icon: Database, title: 'Data Anda tetap utuh', desc: 'Transaksi, hutang, piutang & tabungan tersimpan di server.' },

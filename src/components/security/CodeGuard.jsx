@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ShieldAlert, Lock, RotateCcw } from 'lucide-react';
 
-const GUARD_VIDEO = 'https://media.base44.com/videos/public/6a2817e4a27a25c626d7a995/170bfb409_Guard_Robot.mp4';
 
 const isBlockedKey = (e) => {
   if (e.key === 'F12') return true;
@@ -76,9 +75,9 @@ export default function CodeGuard() {
         style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(239,68,68,.18), transparent 60%), radial-gradient(ellipse at 50% 100%, rgba(14,165,233,.12), transparent 60%)' }} />
 
       <div className="relative w-full max-w-md text-center" style={{ animation: 'guardRise .35s cubic-bezier(.22,1,.36,1) both' }}>
-        <div className="relative mx-auto mb-6 w-full max-w-[300px] overflow-hidden rounded-3xl"
+        <div className="relative mx-auto mb-6 flex h-40 w-40 items-center justify-center overflow-hidden rounded-3xl bg-red-950/30"
           style={{ border: '1px solid rgba(239,68,68,.4)', animation: 'guardPulse 2.4s ease-in-out infinite' }}>
-          <video src={GUARD_VIDEO} autoPlay loop muted playsInline className="block h-full w-full object-cover" />
+          <ShieldAlert size={64} className="text-red-500 animate-pulse" />
           <div className="pointer-events-none absolute inset-x-0 top-0 h-8"
             style={{ background: 'linear-gradient(180deg, transparent, rgba(239,68,68,.35), transparent)', animation: 'guardScan 3s linear infinite' }} />
         </div>

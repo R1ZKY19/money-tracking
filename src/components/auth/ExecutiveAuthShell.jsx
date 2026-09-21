@@ -1,6 +1,6 @@
 import '@/components/auth/executive-auth.css';
 
-const AUTH_LOGO = 'https://media.base44.com/images/public/6a2817e4a27a25c626d7a995/628dd9086_image.png';
+const AUTH_LOGO = '/logo.png';
 
 export default function ExecutiveAuthShell({ children, mode = 'login', english = false }) {
   const register = mode === 'register';

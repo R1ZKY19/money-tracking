@@ -6,7 +6,7 @@ async function getCurrentUserId() {
   return user?.id;
 }
 
-// Helper: apply Base44-style filters to a Supabase query
+// Helper: apply filters to a Supabase query
 function applyFilters(query, filters = []) {
   for (const filter of filters) {
     const { field, operator, value } = filter;
