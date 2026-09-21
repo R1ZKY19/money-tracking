@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
-import { LoginRequest } from '@/api/entities';
+import { supabase } from '@/api/supabaseClient';
 import { toast } from 'sonner';
-import { Loader2, LogIn, Check, X, Clock, ShieldCheck, ShieldX } from 'lucide-react';
+import { Loader2, LogIn, Check, X, Clock, ShieldCheck, ShieldX, UserCheck, Phone, Mail } from 'lucide-react';
 
 const ROLE_OPTIONS = [
   { value: 'staf', label: 'STAF' },
@@ -29,10 +29,17 @@ export default function LoginApprovalPanel() {
 
   const load = useCallback(async () => {
     try {
-      const { data: pendingUsers } = await supabase.from('profiles').select('*').eq('is_approved', false).order('created_at', { ascending: false }); const res = { data: { users: pendingUsers || [] } };
-      setRequests(res.data?.requests || []);
+      // Ambil seluruh user yang berstatus belum disetujui (is_approved: false)
+      const { data: pendingUsers, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('is_approved', false)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setRequests(pendingUsers || []);
     } catch {
-      toast.error('Gagal memuat permintaan login');
+      toast.error('Gagal memuat antrean persetujuan login');
     } finally {
       setLoading(false);
     }
@@ -40,40 +47,62 @@ export default function LoginApprovalPanel() {
 
   useEffect(() => {
     load();
-    let unsub;
-    try { unsub = LoginRequest.subscribe(() => load()); } catch { /* noop */ }
-    const timer = setInterval(load, 30000);
-    return () => { clearInterval(timer); try { unsub?.(); } catch { /* noop */ } };
+    const timer = setInterval(load, 15000);
+    return () => clearInterval(timer);
   }, [load]);
 
   const decide = async (row, action) => {
     setBusyId(row.id);
     try {
-      if (action === 'approve') { await supabase.from('profiles').update({ is_approved: true, role: roleFor[row.id] || 'user' }).eq('id', row.id); await supabase.from('approved_users').upsert({ email: row.email, approved_by: 'admin' }); }
-      toast.success(action === 'approve' ? `${row.email} disetujui` : `${row.email} ditolak`);
+      const selectedRole = roleFor[row.id] || 'staf';
+      if (action === 'approve') {
+        // 1. Update profil menjadi approved
+        await supabase
+          .from('profiles')
+          .update({ is_approved: true, role: selectedRole })
+          .eq('id', row.id);
+
+        // 2. Catat ke tabel approved_users
+        await supabase
+          .from('approved_users')
+          .upsert({
+            email: row.email,
+            is_approved: true,
+            role: selectedRole,
+            approved_by: 'admin',
+            approved_at: new Date().toISOString(),
+          }, { onConflict: 'email' });
+
+        toast.success(`Akun ${row.email} berhasil disetujui sebagai ${selectedRole.toUpperCase()}`);
+      } else {
+        // Tolak pendaftaran
+        await supabase
+          .from('profiles')
+          .update({ is_approved: false, role: 'none' })
+          .eq('id', row.id);
+
+        toast.success(`Pendaftaran ${row.email} ditolak`);
+      }
       await load();
     } catch {
-      toast.error('Gagal memproses permintaan');
+      toast.error('Gagal memproses persetujuan');
     } finally {
       setBusyId(null);
     }
   };
-
-  const pending = requests.filter(r => r.status === 'pending');
-  const history = requests.filter(r => r.status !== 'pending').slice(0, 10);
 
   return (
     <section className="rounded-3xl border border-border bg-card shadow-lg overflow-hidden">
       <div className="px-5 pt-5 pb-4 border-b border-border" style={{ background: 'linear-gradient(135deg, hsl(var(--primary)/0.07), transparent 70%)' }}>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary mb-1.5">Keamanan Akses</p>
-            <h3 className="text-base font-heading font-bold text-foreground tracking-tight">Persetujuan Login</h3>
-            <p className="text-xs text-muted-foreground mt-0.5">Email yang mencoba login menunggu keputusan Anda</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-primary mb-1.5">Keamanan Akses Pendaftaran</p>
+            <h3 className="text-base font-heading font-bold text-foreground tracking-tight">Persetujuan Akun &amp; Login</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">Pengguna yang baru mendaftar menunggu persetujuan Anda</p>
           </div>
           <div className="flex items-center gap-2 rounded-2xl border border-border bg-card px-3 py-2 shadow-sm">
             <span className="w-2 h-2 rounded-full bg-amber-500 pulse-dot" />
-            <span className="text-lg font-heading font-bold leading-none tabular-nums">{pending.length}</span>
+            <span className="text-lg font-heading font-bold leading-none tabular-nums">{requests.length}</span>
             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">menunggu</span>
           </div>
         </div>
@@ -81,70 +110,53 @@ export default function LoginApprovalPanel() {
 
       {loading ? (
         <div className="py-12 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>
-      ) : pending.length === 0 ? (
+      ) : requests.length === 0 ? (
         <div className="py-12 text-center text-muted-foreground">
-          <LogIn size={28} className="mx-auto mb-2 opacity-20" />
-          <p className="text-sm">Tidak ada permintaan login yang menunggu.</p>
+          <UserCheck size={32} className="mx-auto mb-2 opacity-30 text-emerald-600" />
+          <p className="text-sm font-medium">Semua pendaftar telah diproses.</p>
+          <p className="text-xs text-muted-foreground mt-1">Tidak ada pendaftaran baru yang menunggu persetujuan.</p>
         </div>
       ) : (
         <div className="divide-y divide-border">
-          {pending.map(row => (
-            <div key={row.id} className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 sm:px-5 py-3.5 hover:bg-muted/40 transition-colors">
+          {requests.map(row => (
+            <div key={row.id} className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 sm:px-5 py-4 hover:bg-muted/40 transition-colors">
               <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400 flex items-center justify-center shrink-0">
                 <LogIn size={16} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-bold text-foreground truncate">{row.email}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5 flex items-center gap-1">
-                  <Clock size={9} /> {fmt(row.attempted_at)} · {timeAgo(row.attempted_at)}
-                  {row.attempts > 1 && <span className="ml-1">· {row.attempts}x percobaan</span>}
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-bold text-foreground truncate">{row.full_name || 'Member Baru'}</p>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-semibold">Menunggu</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1.5 flex-wrap">
+                  <span>✉ {row.email}</span>
+                  {row.phone && <span>• 📱 {row.phone}</span>}
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                  <Clock size={10} /> Mendaftar {timeAgo(row.created_at)} ({fmt(row.created_at)})
                 </p>
               </div>
-              <select
-                aria-label={`Role untuk ${row.email}`}
-                value={roleFor[row.id] || 'staf'}
-                onChange={e => setRoleFor(s => ({ ...s, [row.id]: e.target.value }))}
-                className="h-8 rounded-xl border border-border bg-background text-[11px] font-semibold px-2 shrink-0"
-              >
-                {ROLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
-              </select>
-              <div className="flex items-center gap-1.5 shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
+                <select
+                  aria-label={`Role untuk ${row.email}`}
+                  value={roleFor[row.id] || 'staf'}
+                  onChange={e => setRoleFor(s => ({ ...s, [row.id]: e.target.value }))}
+                  className="h-9 rounded-xl border border-border bg-background text-xs font-semibold px-2.5 shrink-0"
+                >
+                  {ROLE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                </select>
                 <button onClick={() => decide(row, 'approve')} disabled={busyId === row.id}
-                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-xl bg-emerald-600 text-white text-[11px] font-bold hover:bg-emerald-700 disabled:opacity-50 transition-colors">
-                  {busyId === row.id ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />} Setujui
+                  className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 disabled:opacity-50 transition-colors shadow-sm">
+                  {busyId === row.id ? <Loader2 size={12} className="animate-spin" /> : <Check size={13} />} Setujui
                 </button>
                 <button onClick={() => decide(row, 'reject')} disabled={busyId === row.id}
-                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-xl border border-border bg-card text-red-500 text-[11px] font-bold hover:bg-red-50 hover:border-red-200 disabled:opacity-50 transition-colors">
-                  <X size={12} /> Tolak
+                  className="inline-flex items-center gap-1.5 h-9 px-3 rounded-xl border border-border bg-card text-red-500 text-xs font-bold hover:bg-red-50 hover:border-red-200 disabled:opacity-50 transition-colors">
+                  <X size={13} /> Tolak
                 </button>
               </div>
             </div>
           ))}
         </div>
-      )}
-
-      {history.length > 0 && (
-        <>
-          <div className="px-5 py-2.5 bg-muted/40 border-y border-border">
-            <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground">Riwayat Keputusan</p>
-          </div>
-          <div className="divide-y divide-border">
-            {history.map(row => (
-              <div key={row.id} className="flex items-center gap-3 px-4 sm:px-5 py-3">
-                {row.status === 'approved'
-                  ? <ShieldCheck size={15} className="text-emerald-600 shrink-0" />
-                  : <ShieldX size={15} className="text-red-500 shrink-0" />}
-                <p className="text-xs font-semibold text-foreground truncate flex-1">{row.email}</p>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${row.status === 'approved'
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800'
-                  : 'bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'}`}>
-                  {row.status === 'approved' ? 'Disetujui' : 'Ditolak'}
-                </span>
-                <span className="text-[10px] text-muted-foreground shrink-0 hidden sm:block">{fmt(row.decided_at)}</span>
-              </div>
-            ))}
-          </div>
-        </>
       )}
     </section>
   );

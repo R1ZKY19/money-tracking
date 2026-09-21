@@ -137,7 +137,9 @@ export default function Login() {
       if (msg.includes('Invalid login credentials')) {
         setError(language === 'en' ? "Invalid email or password" : "Email atau password salah");
       } else if (msg.includes('Email not confirmed')) {
-        setError(language === 'en' ? "Please verify your email first" : "Harap verifikasi email Anda terlebih dahulu");
+        setError(language === 'en'
+          ? "Your account is awaiting approval. Please contact the Admin via WhatsApp."
+          : "Akun Anda sedang menunggu persetujuan Admin. Silakan konfirmasi ke WhatsApp Admin untuk aktivasi.");
       } else {
         setError(msg);
       }
